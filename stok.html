@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Informasi Stok dan Katalog Buku - UTS Pemrograman Web 1">
+  <title>Katalog & Stok Buku - Toko Online Pemesanan Buku</title>
+
+  <!-- External CSS -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Internal CSS (Kriteria CSS Internal) -->
+  <style>
+    .katalog-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      background: #ffffff;
+      padding: 1.25rem;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 1.5rem;
+    }
+
+    .katalog-filters {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      flex: 1 1 350px;
+    }
+
+    .search-box-wrapper {
+      position: relative;
+      flex: 1 1 240px;
+    }
+
+    .search-box-wrapper input {
+      padding-left: 2.25rem;
+    }
+
+    .search-box-icon {
+      position: absolute;
+      left: 0.8rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-light);
+      pointer-events: none;
+    }
+
+    .view-toggle-btns {
+      display: flex;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+
+    .btn-toggle-view {
+      background: #ffffff;
+      border: none;
+      padding: 0.5rem 0.85rem;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      transition: var(--transition);
+    }
+
+    .btn-toggle-view.active {
+      background: var(--primary);
+      color: #ffffff;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header Navigasi -->
+  <header class="navbar">
+    <div class="container nav-container">
+      <a href="dashboard.html" class="nav-brand">
+        <img src="assets/logo.png" alt="Logo Toko Buku" onerror="this.src='https://placehold.co/42x42?text=TB'">
+        <span>Toko Buku <strong>Online UT</strong></span>
+      </a>
+
+      <!-- Menu Navigasi Utama -->
+      <nav class="nav-menu" id="navMenu">
+        <a href="dashboard.html" class="nav-link">Dashboard</a>
+        <a href="stok.html" class="nav-link active">Informasi Stok</a>
+        <a href="checkout.html" class="nav-link">Pemesanan</a>
+        <a href="tracking.html" class="nav-link">Tracking DO</a>
+        <a href="index.html" class="nav-link">Halaman Login</a>
+      </nav>
+
+      <!-- Badge User & Logout -->
+      <div class="nav-user" id="navbarUserBadge">
+        <!-- Dirender secara dinamis oleh script.js -->
+      </div>
+
+      <!-- Tombol Hamburger Mobile -->
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle Menu">&#9776;</button>
+    </div>
+  </header>
+
+  <!-- Konten Utama: Katalog & Stok Buku -->
+  <main class="main-content">
+    <div class="container">
+
+      <!-- Breadcrumbs & Header Judul -->
+      <section style="margin-bottom: 1.5rem;">
+        <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.35rem;">
+          <a href="dashboard.html">Dashboard</a> &rsaquo; <span>Informasi Stok / Katalog</span>
+        </div>
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h1 style="font-size: 1.85rem; font-weight: 800; color: var(--secondary);">
+              Katalog & Informasi Stok Buku
+            </h1>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">
+              Daftar buku ajar universitas yang diambil secara dinamis dari variabel konstanta <code>dataKatalogBuku</code>.
+            </p>
+          </div>
+          <!-- Tombol Tambah Stok Baru (Membuka Modal) -->
+          <button type="button" class="btn btn-primary" onclick="openModal('modalTambahStok')">
+            + Tambah Baris Stok Baru
+          </button>
+        </div>
+      </section>
+
+      <!-- TOOLBAR: SEARCH, FILTER, & TOGGLE VIEW -->
+      <section class="katalog-toolbar">
+        <div class="katalog-filters">
+          <div class="search-box-wrapper">
+            <span class="search-box-icon">&#128269;</span>
+            <input 
+              type="text" 
+              id="searchBukuInput" 
+              class="form-control" 
+              placeholder="Cari judul buku atau kode barang..."
+            >
+          </div>
+          <select id="filterKategori" class="form-control" style="width: auto; min-width: 170px;">
+            <option value="Semua">Semua Kategori</option>
+            <option value="Buku Ajar">Buku Ajar</option>
+            <option value="Modul Praktikum">Modul Praktikum</option>
+            <option value="Referensi Khusus">Referensi Khusus</option>
+          </select>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 1rem;">
+          <span id="infoTotalItem" style="font-size: 0.875rem; color: var(--text-muted); font-weight: 500;">
+            Menampilkan 5 judul buku
+          </span>
+          <div class="view-toggle-btns">
+            <button type="button" class="btn-toggle-view active" id="btnViewTable" onclick="switchView('table')">
+              Tabel
+            </button>
+            <button type="button" class="btn-toggle-view" id="btnViewCards" onclick="switchView('cards')">
+              Kartu
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 1: TABEL DATA DINAMIS (Manipulasi Data Tabel & DOM) -->
+      <section id="sectionTableView" class="table-responsive">
+        <table class="table" id="tableKatalog">
+          <thead>
+            <tr>
+              <th style="width: 50px;">No.</th>
+              <th style="width: 70px;">Sampul</th>
+              <th>Kode Barang</th>
+              <th>Nama Judul Buku</th>
+              <th>Jenis</th>
+              <th>Edisi</th>
+              <th>Jumlah Stok</th>
+              <th>Harga Satuan</th>
+              <th style="width: 110px;">Aksi</th>
+            </tr>
+          </thead>
+          <!-- Baris akan dirender dinamis via DOM dari data.js -->
+          <tbody id="katalogTableBody">
+            <!-- Loading placeholder -->
+            <tr>
+              <td colspan="9" style="text-align: center; padding: 2rem;">Memuat katalog buku...</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- VIEW 2: KARTU GRID (ALTERNATIF VIEW) -->
+      <section id="sectionCardsView" style="display: none;">
+        <div class="cards-grid" id="katalogCardsContainer">
+          <!-- Dirender dinamis via script.js -->
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- MODAL BOX: FORM TAMBAH BARIS STOK BARU (DOM MANIPULATION) -->
+  <div class="modal-overlay" id="modalTambahStok" role="dialog" aria-modal="true" aria-labelledby="modalTambahTitle">
+    <div class="modal-box" style="max-width: 560px;">
+      <header class="modal-header">
+        <h3 class="modal-title" id="modalTambahTitle">Tambah Baris Stok Buku Baru</h3>
+        <button type="button" class="modal-close" onclick="closeModal('modalTambahStok')" aria-label="Tutup">&times;</button>
+      </header>
+      <form id="formTambahStok" novalidate>
+        <div class="modal-body">
+          <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+            Isi data di bawah ini untuk menambahkan baris data buku baru secara langsung ke dalam DOM tabel dan penyimpanan lokal.
+          </p>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="tambahKode" class="form-label">Kode Barang <span class="required">*</span></label>
+              <input type="text" id="tambahKode" class="form-control" placeholder="Contoh: MSIM4301" required>
+            </div>
+            <div class="form-group">
+              <label for="tambahEdisi" class="form-label">Edisi Buku <span class="required">*</span></label>
+              <input type="text" id="tambahEdisi" class="form-control" placeholder="Contoh: 1" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="tambahNama" class="form-label">Nama / Judul Buku <span class="required">*</span></label>
+            <input type="text" id="tambahNama" class="form-control" placeholder="Contoh: Rekayasa Perangkat Lunak" required>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="tambahJenis" class="form-label">Jenis Barang</label>
+              <select id="tambahJenis" class="form-control">
+                <option value="Buku Ajar">Buku Ajar</option>
+                <option value="Modul Praktikum">Modul Praktikum</option>
+                <option value="Referensi Khusus">Referensi Khusus</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="tambahStok" class="form-label">Jumlah Stok Fisik <span class="required">*</span></label>
+              <input type="number" id="tambahStok" class="form-control" placeholder="100" min="0" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="tambahHarga" class="form-label">Harga Satuan (Rp) <span class="required">*</span></label>
+              <input type="number" id="tambahHarga" class="form-control" placeholder="150000" min="1000" step="5000" required>
+            </div>
+            <div class="form-group">
+              <label for="tambahCover" class="form-label">Path / Nama Gambar Cover</label>
+              <input type="text" id="tambahCover" class="form-control" placeholder="img/pengantar_komunikasi.jpg">
+            </div>
+          </div>
+        </div>
+
+        <footer class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modalTambahStok')">Batal</button>
+          <button type="submit" class="btn btn-primary">+ Tambahkan ke Tabel DOM</button>
+        </footer>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL ALERT KUSTOM -->
+  <div class="modal-overlay" id="customAlertModal" role="alertdialog" aria-modal="true">
+    <div class="modal-box alert-box">
+      <div id="alertIcon" class="alert-icon info">&#8505;</div>
+      <p id="alertMessage" class="alert-message">Pesan notifikasi</p>
+      <button type="button" id="alertBtnOk" class="btn btn-primary" style="min-width: 130px;">
+        Mengerti / OK
+      </button>
+    </div>
+  </div>
+
+  <!-- Footer Halaman -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <p>&copy; 2026 Toko Buku Online - Tugas UTS Pemrograman Web 1. All rights reserved.</p>
+      <p style="font-size: 0.8rem;">Dibuat dengan HTML Semantik, CSS Modern, dan JavaScript DOM Manipulation.</p>
+    </div>
+  </footer>
+
+  <!-- Script Sumber Data & Interaktivitas -->
+  <script src="js/data.js"></script>
+  <script src="js/script.js"></script>
+
+  <!-- Script Khusus Halaman Stok (Switch View) -->
+  <script>
+    function switchView(view) {
+      var tableSection = document.getElementById("sectionTableView");
+      var cardsSection = document.getElementById("sectionCardsView");
+      var btnTable = document.getElementById("btnViewTable");
+      var btnCards = document.getElementById("btnViewCards");
+
+      if (view === 'cards') {
+        tableSection.style.display = 'none';
+        cardsSection.style.display = 'block';
+        btnTable.classList.remove('active');
+        btnCards.classList.add('active');
+      } else {
+        tableSection.style.display = 'block';
+        cardsSection.style.display = 'none';
+        btnTable.classList.add('active');
+        btnCards.classList.remove('active');
+      }
+    }
+  </script>
+</body>
+</html>
+

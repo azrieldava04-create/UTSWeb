@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Informasi Tracking dan Status Pengiriman DO - UTS Pemrograman Web 1">
+  <title>Tracking Pengiriman - Toko Online Buku</title>
+
+  <!-- External CSS -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Internal CSS (Kriteria CSS Internal) -->
+  <style>
+    .tracking-search-hero {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2.25rem;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 2rem;
+    }
+
+    .tracking-input-group {
+      display: flex;
+      gap: 0.75rem;
+      max-width: 600px;
+      margin: 1.25rem 0 1rem;
+    }
+
+    @media (max-width: 640px) {
+      .tracking-input-group {
+        flex-direction: column;
+      }
+    }
+
+    .tracking-info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.25rem;
+      background: var(--bg-subtle);
+      padding: 1.25rem;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      margin-bottom: 2rem;
+    }
+
+    .track-meta-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .track-meta-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.25rem;
+    }
+
+    .track-meta-val {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--secondary);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header Navigasi -->
+  <header class="navbar">
+    <div class="container nav-container">
+      <a href="dashboard.html" class="nav-brand">
+        <img src="assets/logo.png" alt="Logo Toko Buku" onerror="this.src='https://placehold.co/42x42?text=TB'">
+        <span>Toko Buku <strong>Online UT</strong></span>
+      </a>
+
+      <!-- Menu Navigasi Utama -->
+      <nav class="nav-menu" id="navMenu">
+        <a href="dashboard.html" class="nav-link">Dashboard</a>
+        <a href="stok.html" class="nav-link">Informasi Stok</a>
+        <a href="checkout.html" class="nav-link">Pemesanan</a>
+        <a href="tracking.html" class="nav-link active">Tracking DO</a>
+        <a href="index.html" class="nav-link">Halaman Login</a>
+      </nav>
+
+      <!-- Badge User & Logout -->
+      <div class="nav-user" id="navbarUserBadge">
+        <!-- Dirender secara dinamis oleh script.js -->
+      </div>
+
+      <!-- Tombol Hamburger Mobile -->
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle Menu">&#9776;</button>
+    </div>
+  </header>
+
+  <!-- Konten Utama: Tracking Pengiriman -->
+  <main class="main-content">
+    <div class="container">
+
+      <!-- Breadcrumbs & Header Judul -->
+      <section style="margin-bottom: 1.5rem;">
+        <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.35rem;">
+          <a href="dashboard.html">Dashboard</a> &rsaquo; <span>Informasi Pengiriman</span>
+        </div>
+        <h1 style="font-size: 1.85rem; font-weight: 800; color: var(--secondary);">
+          Lacak Pengiriman (Delivery Order)
+        </h1>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">
+          Masukkan Nomor DO pesanan Anda untuk memantau progres ekspedisi, status terkini, dan riwayat perjalanan paket.
+        </p>
+      </section>
+
+      <!-- SECTION PENCARIAN NOMOR DO -->
+      <section class="tracking-search-hero">
+        <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--secondary); margin-bottom: 0.25rem;">
+          Cari Status Pengiriman Paket
+        </h2>
+        <p style="font-size: 0.875rem; color: var(--text-muted);">
+          Gunakan Nomor Delivery Order resmi dari sistem Universitas Terbuka.
+        </p>
+
+        <!-- Input Field & Tombol Cari -->
+        <div class="tracking-input-group">
+          <input 
+            type="text" 
+            id="inputNomorDO" 
+            class="form-control" 
+            placeholder="Masukkan Nomor DO (Contoh: 20230012)"
+            value="20230012"
+          >
+          <button type="button" id="btnCariDO" class="btn btn-primary" style="white-space: nowrap;">
+            &#128269; Cari Pengiriman
+          </button>
+        </div>
+
+        <!-- Quick Chips untuk Dosen / Penguji Coba Cepat -->
+        <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem; font-size: 0.85rem;">
+          <span style="color: var(--text-muted); font-weight: 600;">Contoh Nomor DO:</span>
+          <button type="button" class="chip chip-primary" style="cursor: pointer;" onclick="quickCheckDO('20230012')">
+            DO: 20230012 (Dalam Perjalanan)
+          </button>
+          <button type="button" class="chip chip-success" style="cursor: pointer;" onclick="quickCheckDO('20230013')">
+            DO: 20230013 (Selesai Dikirim)
+          </button>
+        </div>
+      </section>
+
+      <!-- HASIL PENCARIAN TRACKING (DYNAMIC CONTAINER) -->
+      <section class="card" id="trackingResult" style="margin-bottom: 2rem;">
+        
+        <!-- Header Hasil -->
+        <header class="card-header">
+          <div>
+            <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">HASIL PENCARIAN RESI DO:</span>
+            <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--secondary);" id="trackNomorDO">
+              20230012
+            </h2>
+          </div>
+          <div>
+            <span id="trackStatusBadge" class="chip chip-primary" style="font-size: 0.95rem; padding: 0.4rem 1rem;">
+              Dalam Perjalanan
+            </span>
+          </div>
+        </header>
+
+        <!-- GRID DETAIL DATA PENGIRIMAN & EKSPEDISI -->
+        <div class="tracking-info-grid">
+          <div class="track-meta-item">
+            <span class="track-meta-label">Nama Pemesan</span>
+            <span class="track-meta-val" id="trackNama">Rina Wulandari</span>
+          </div>
+          <div class="track-meta-item">
+            <span class="track-meta-label">Ekspedisi Kurir</span>
+            <span class="track-meta-val" id="trackEkspedisi">JNE</span>
+          </div>
+          <div class="track-meta-item">
+            <span class="track-meta-label">Tanggal Kirim</span>
+            <span class="track-meta-val" id="trackTanggal">2025-08-25</span>
+          </div>
+          <div class="track-meta-item">
+            <span class="track-meta-label">Jenis Paket</span>
+            <span class="track-meta-val" id="trackPaket">0JKT01</span>
+          </div>
+          <div class="track-meta-item">
+            <span class="track-meta-label">Total Pembayaran</span>
+            <span class="track-meta-val" style="color: var(--primary);" id="trackTotal">Rp 180.000</span>
+          </div>
+        </div>
+
+        <!-- PROGRESS BAR & STATUS PENGIRIMAN VISUAL (KRITERIA UTS) -->
+        <div style="margin: 2.5rem 0 2rem;">
+          <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--secondary); margin-bottom: 0.5rem; text-align: center;">
+            Status & Progress Pengiriman Paket
+          </h3>
+
+          <div class="tracking-stepper">
+            <!-- Garis Progress Aktif Dinamis (Inline CSS Style) -->
+            <div class="tracking-progress-fill" id="trackingProgressFill" style="width: 55%;"></div>
+
+            <!-- Tahap 1 -->
+            <div class="step-item completed" id="step1">
+              <div class="step-circle">&#10003;</div>
+              <div class="step-label">1. Penerimaan di Loket</div>
+            </div>
+
+            <!-- Tahap 2 -->
+            <div class="step-item completed" id="step2">
+              <div class="step-circle">&#10003;</div>
+              <div class="step-label">2. Tiba di Hub</div>
+            </div>
+
+            <!-- Tahap 3 -->
+            <div class="step-item active" id="step3">
+              <div class="step-circle">3</div>
+              <div class="step-label">3. Dalam Perjalanan</div>
+            </div>
+
+            <!-- Tahap 4 -->
+            <div class="step-item" id="step4">
+              <div class="step-circle">4</div>
+              <div class="step-label">4. Selesai Antar</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIWAYAT DETAIL PERJALANAN LOGISTIK (TIMELINE LIST DARI DATA JSON) -->
+        <div style="margin-top: 2rem; border-top: 1px solid var(--border); padding-top: 1.5rem;">
+          <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--secondary); margin-bottom: 1rem;">
+            Riwayat Logistik & Perjalanan Paket
+          </h3>
+          <div class="timeline" id="trackingTimelineList">
+            <!-- Dirender secara dinamis oleh JavaScript dari array dataTracking.perjalanan -->
+          </div>
+        </div>
+
+      </section>
+
+    </div>
+  </main>
+
+  <!-- MODAL ALERT KUSTOM -->
+  <div class="modal-overlay" id="customAlertModal" role="alertdialog" aria-modal="true">
+    <div class="modal-box alert-box">
+      <div id="alertIcon" class="alert-icon error">&#10060;</div>
+      <p id="alertMessage" class="alert-message">Nomor Delivery Order tidak ditemukan</p>
+      <button type="button" id="alertBtnOk" class="btn btn-primary" style="min-width: 130px;">
+        Mengerti / OK
+      </button>
+    </div>
+  </div>
+
+  <!-- Footer Halaman -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <p>&copy; 2026 Toko Buku Online - Tugas UTS Pemrograman Web 1. All rights reserved.</p>
+      <p style="font-size: 0.8rem;">Dibuat dengan HTML Semantik, CSS Modern, dan JavaScript DOM Manipulation.</p>
+    </div>
+  </footer>
+
+  <!-- Script Sumber Data & Interaktivitas -->
+  <script src="js/data.js"></script>
+  <script src="js/script.js"></script>
+</body>
+</html>
+

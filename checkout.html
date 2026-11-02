@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Form Pemesanan Buku dan Checkout Pembayaran - UTS Pemrograman Web 1">
+  <title>Pemesanan & Checkout - Toko Online Buku</title>
+
+  <!-- External CSS -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Internal CSS (Kriteria CSS Internal) -->
+  <style>
+    .checkout-layout {
+      display: grid;
+      grid-template-columns: 1.25fr 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    @media (max-width: 900px) {
+      .checkout-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .order-summary-card {
+      position: sticky;
+      top: 96px;
+    }
+
+    .summary-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+      font-size: 0.95rem;
+    }
+
+    .summary-line.total {
+      border-top: 2px dashed var(--border);
+      padding-top: 1rem;
+      margin-top: 1rem;
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .payment-option-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+    }
+
+    .payment-badge {
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 0.75rem;
+      text-align: center;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      background: #ffffff;
+    }
+
+    .payment-badge:hover {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header Navigasi -->
+  <header class="navbar">
+    <div class="container nav-container">
+      <a href="dashboard.html" class="nav-brand">
+        <img src="assets/logo.png" alt="Logo Toko Buku" onerror="this.src='https://placehold.co/42x42?text=TB'">
+        <span>Toko Buku <strong>Online UT</strong></span>
+      </a>
+
+      <!-- Menu Navigasi Utama -->
+      <nav class="nav-menu" id="navMenu">
+        <a href="dashboard.html" class="nav-link">Dashboard</a>
+        <a href="stok.html" class="nav-link">Informasi Stok</a>
+        <a href="checkout.html" class="nav-link active">Pemesanan</a>
+        <a href="tracking.html" class="nav-link">Tracking DO</a>
+        <a href="index.html" class="nav-link">Halaman Login</a>
+      </nav>
+
+      <!-- Badge User & Logout -->
+      <div class="nav-user" id="navbarUserBadge">
+        <!-- Dirender secara dinamis oleh script.js -->
+      </div>
+
+      <!-- Tombol Hamburger Mobile -->
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle Menu">&#9776;</button>
+    </div>
+  </header>
+
+  <!-- Konten Utama: Form Pemesanan & Checkout -->
+  <main class="main-content">
+    <div class="container">
+
+      <!-- Breadcrumbs & Header Judul -->
+      <section style="margin-bottom: 1.5rem;">
+        <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.35rem;">
+          <a href="dashboard.html">Dashboard</a> &rsaquo; <span>Laporan Pemesanan & Checkout</span>
+        </div>
+        <h1 style="font-size: 1.85rem; font-weight: 800; color: var(--secondary);">
+          Formulir Pemesanan & Pembayaran Buku
+        </h1>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">
+          Lengkapi data pemesan dan pilih metode pembayaran untuk memproses pesanan dan menerbitkan Nomor Delivery Order (DO).
+        </p>
+      </section>
+
+      <!-- Layout 2 Kolom: Data Pemesan & Ringkasan Pesanan -->
+      <div class="checkout-layout">
+
+        <!-- KOLOM 1: FORM INFORMASI PEMESAN & METODE BAYAR -->
+        <section class="card">
+          <header class="card-header">
+            <h2 class="card-title">1. Data Informasi Pemesan</h2>
+            <span class="chip chip-primary">Wajib Diisi</span>
+          </header>
+
+          <form id="formCheckout" novalidate>
+            
+            <div class="form-group">
+              <label for="checkoutNama" class="form-label">Nama Lengkap Pemesan <span class="required">*</span></label>
+              <input type="text" id="checkoutNama" class="form-control" placeholder="Contoh: Rina Wulandari" required>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="checkoutEmail" class="form-label">Email Pemesan</label>
+                <input type="email" id="checkoutEmail" class="form-control" placeholder="rina@gmail.com">
+              </div>
+              <div class="form-group">
+                <label for="checkoutHP" class="form-label">Nomor Handphone / WhatsApp <span class="required">*</span></label>
+                <input type="tel" id="checkoutHP" class="form-control" placeholder="081234567890" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="checkoutAlamat" class="form-label">Alamat Lengkap Pengiriman <span class="required">*</span></label>
+              <textarea id="checkoutAlamat" class="form-control" placeholder="Tuliskan nama jalan, RT/RW, nomor rumah, kelurahan, kecamatan, kota/kabupaten dan kode pos..." required></textarea>
+            </div>
+
+            <div class="card-header" style="margin-top: 1.5rem; border-top: 1px solid var(--border); padding-top: 1.25rem;">
+              <h2 class="card-title">2. Ekspedisi & Pembayaran</h2>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="checkoutKurir" class="form-label">Pilih Ekspedisi / Kurir <span class="required">*</span></label>
+                <select id="checkoutKurir" class="form-control" required>
+                  <option value="JNE">JNE Express (Rp 18.000)</option>
+                  <option value="Pos Indonesia">Pos Indonesia (Rp 15.000)</option>
+                  <option value="SiCepat">SiCepat Cargo (Rp 17.000)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="checkoutPembayaran" class="form-label">Metode Pembayaran <span class="required">*</span></label>
+                <select id="checkoutPembayaran" class="form-control" required>
+                  <option value="Transfer Bank BCA">Transfer Bank BCA</option>
+                  <option value="Transfer Bank Mandiri">Transfer Bank Mandiri</option>
+                  <option value="GoPay / OVO / Dana">E-Wallet (GoPay / OVO / Dana)</option>
+                  <option value="COD (Bayar di Tempat)">COD (Bayar di Tempat)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="checkoutCatatan" class="form-label">Catatan Tambahan (Opsional)</label>
+              <input type="text" id="checkoutCatatan" class="form-control" placeholder="Contoh: Titipkan di pos satpam bila rumah kosong">
+            </div>
+
+            <!-- Tombol Submit Checkout -->
+            <button type="submit" class="btn btn-success btn-lg" style="width: 100%; margin-top: 1rem; box-shadow: var(--shadow-md);">
+              &#128179; Konfirmasi & Proses Pesanan
+            </button>
+          </form>
+        </section>
+
+        <!-- KOLOM 2: RINGKASAN DATA PEMESANAN (DAPAT DIUBAH/DITAMBAH VIA DOM) -->
+        <aside class="card order-summary-card">
+          <header class="card-header">
+            <h2 class="card-title">Ringkasan Pemesanan</h2>
+            <button type="button" class="btn btn-sm btn-outline" id="btnBukaModalItem">
+              + Tambah Buku Lain
+            </button>
+          </header>
+
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+            Data buku pesanan dapat diubah jumlahnya atau dihapus menggunakan manipulasi DOM.
+          </p>
+
+          <!-- Tabel Ringkasan Pesanan Interaktif -->
+          <div class="table-responsive" style="margin-bottom: 1.25rem;">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Judul Buku</th>
+                  <th>Harga</th>
+                  <th>Qty</th>
+                  <th>Subtotal</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="orderTableBody">
+                <!-- Dirender secara dinamis oleh JavaScript -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Rincian Biaya -->
+          <div style="background: var(--bg-subtle); padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border);">
+            <div class="summary-line">
+              <span style="color: var(--text-muted);">Subtotal Buku:</span>
+              <strong id="summarySubtotal">Rp 0</strong>
+            </div>
+            <div class="summary-line">
+              <span style="color: var(--text-muted);">Biaya Pengiriman:</span>
+              <strong id="summaryOngkir">Rp 18.000</strong>
+            </div>
+            <div class="summary-line">
+              <span style="color: var(--text-muted);">Biaya Layanan & Asuransi:</span>
+              <strong style="color: var(--success);">GRATIS (Rp 0)</strong>
+            </div>
+            <div class="summary-line total">
+              <span>Total Pembayaran:</span>
+              <span id="summaryTotal">Rp 0</span>
+            </div>
+          </div>
+
+          <div style="margin-top: 1rem; font-size: 0.8rem; color: var(--text-muted); text-align: center;">
+            🔒 Transaksi aman dan terverifikasi otomatis oleh sistem dummy UT.
+          </div>
+        </aside>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- MODAL: PILIH ITEM TAMBAHAN DARI KATALOG -->
+  <div class="modal-overlay" id="modalPilihItem" role="dialog" aria-modal="true" aria-labelledby="modalPilihItemTitle">
+    <div class="modal-box" style="max-width: 520px;">
+      <header class="modal-header">
+        <h3 class="modal-title" id="modalPilihItemTitle">Pilih Buku Dari Katalog</h3>
+        <button type="button" class="modal-close" onclick="closeModal('modalPilihItem')" aria-label="Tutup">&times;</button>
+      </header>
+      <div class="modal-body">
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+          Klik "+ Pilih" untuk memasukkan buku ke dalam keranjang pemesanan saat ini:
+        </p>
+        <div id="pilihItemKatalogContainer" style="max-height: 350px; overflow-y: auto;">
+          <!-- Dirender dinamis oleh script.js -->
+        </div>
+      </div>
+      <footer class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('modalPilihItem')">Tutup</button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- MODAL: INVOICE / BUKTI PEMESANAN SUKSES -->
+  <div class="modal-overlay" id="modalInvoiceSukses" role="dialog" aria-modal="true">
+    <div class="modal-box" style="max-width: 480px;">
+      <div class="modal-body" id="invoiceDetailContent">
+        <!-- Konten diinjeksi via JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL ALERT KUSTOM -->
+  <div class="modal-overlay" id="customAlertModal" role="alertdialog" aria-modal="true">
+    <div class="modal-box alert-box">
+      <div id="alertIcon" class="alert-icon warning">&#9888;</div>
+      <p id="alertMessage" class="alert-message">Pesan notifikasi</p>
+      <button type="button" id="alertBtnOk" class="btn btn-primary" style="min-width: 130px;">
+        Mengerti / OK
+      </button>
+    </div>
+  </div>
+
+  <!-- Footer Halaman -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <p>&copy; 2026 Toko Buku Online - Tugas UTS Pemrograman Web 1. All rights reserved.</p>
+      <p style="font-size: 0.8rem;">Dibuat dengan HTML Semantik, CSS Modern, dan JavaScript DOM Manipulation.</p>
+    </div>
+  </footer>
+
+  <!-- Script Sumber Data & Interaktivitas -->
+  <script src="js/data.js"></script>
+  <script src="js/script.js"></script>
+</body>
+</html>
+

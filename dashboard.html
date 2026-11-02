@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Dashboard Menu Utama Toko Buku Online">
+  <title>Dashboard Menu Utama - Toko Buku Online</title>
+
+  <!-- External CSS -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Internal CSS (Kriteria CSS Internal) -->
+  <style>
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .menu-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      text-decoration: none;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .menu-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-xl);
+      border-color: var(--primary);
+    }
+
+    .menu-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 6px;
+      height: 100%;
+      background: var(--primary);
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+
+    .menu-card:hover::before {
+      opacity: 1;
+    }
+
+    .menu-card-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: var(--radius-md);
+      display: grid;
+      place-items: center;
+      font-size: 1.6rem;
+      margin-bottom: 1.25rem;
+      background: var(--primary-light);
+      color: var(--primary);
+      transition: transform 0.3s ease;
+    }
+
+    .menu-card:hover .menu-card-icon {
+      transform: scale(1.1);
+    }
+
+    .menu-card-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--secondary);
+      margin-bottom: 0.5rem;
+    }
+
+    .menu-card-desc {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 1.25rem;
+    }
+
+    .menu-card-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .stat-card {
+      background: #ffffff;
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .stat-icon-wrapper {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+
+    .stat-number {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--secondary);
+      line-height: 1.2;
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .highlight-name {
+      color: #fef08a;
+      text-decoration: underline;
+      text-underline-offset: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header Navigasi -->
+  <header class="navbar">
+    <div class="container nav-container">
+      <a href="dashboard.html" class="nav-brand">
+        <img src="assets/logo.png" alt="Logo Toko Buku" onerror="this.src='https://placehold.co/42x42?text=TB'">
+        <span>Toko Buku <strong>Online UT</strong></span>
+      </a>
+
+      <!-- Menu Navigasi Utama -->
+      <nav class="nav-menu" id="navMenu">
+        <a href="dashboard.html" class="nav-link active">Dashboard</a>
+        <a href="stok.html" class="nav-link">Informasi Stok</a>
+        <a href="checkout.html" class="nav-link">Pemesanan</a>
+        <a href="tracking.html" class="nav-link">Tracking DO</a>
+        <a href="index.html" class="nav-link">Halaman Login</a>
+      </nav>
+
+      <!-- Badge User & Logout -->
+      <div class="nav-user" id="navbarUserBadge">
+        <!-- Dirender secara dinamis oleh script.js -->
+      </div>
+
+      <!-- Tombol Hamburger Mobile -->
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle Menu">&#9776;</button>
+    </div>
+  </header>
+
+  <!-- Konten Utama Dashboard -->
+  <main class="main-content">
+    <div class="container">
+
+      <!-- HERO BANNER DENGAN GREETING DINAMIS BERDASARKAN WAKTU LOKAL -->
+      <section class="hero-banner">
+        <div style="position: relative; z-index: 2;">
+          <!-- Greeting dinamis: Selamat Pagi / Siang / Sore berdasarkan local time -->
+          <h1 class="greeting-text" id="dashboardGreeting">
+            Selamat Datang di Toko Buku Online!
+          </h1>
+          <p class="greeting-subtext" id="dashboardGreetingSub">
+            Sistem informasi manajemen pemesanan buku digital, inventaris stok barang, dan tracking delivery order terintegrasi.
+          </p>
+
+          <div class="hero-meta">
+            <!-- Waktu Sesi (Inline CSS Style) -->
+            <span class="meta-pill" id="timeBadge" style="background-color: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.3);">
+              Waktu Sesi: Memuat...
+            </span>
+            <!-- Jam Lokal Terkini -->
+            <span class="meta-pill" style="background-color: rgba(0, 0, 0, 0.2);">
+              🕒 <span id="liveClock">Memuat waktu lokal...</span>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- STATISTIK RINGKASAN CEPAT -->
+      <section>
+        <div class="stats-grid">
+          <article class="stat-card">
+            <div class="stat-icon-wrapper" style="background: var(--primary-light); color: var(--primary);">
+              📚
+            </div>
+            <div>
+              <div class="stat-number" id="statTotalJudul">5</div>
+              <div class="stat-label">Total Judul Buku</div>
+            </div>
+          </article>
+
+          <article class="stat-card">
+            <div class="stat-icon-wrapper" style="background: var(--success-light); color: var(--success);">
+              📦
+            </div>
+            <div>
+              <div class="stat-number" id="statTotalStok">1.587</div>
+              <div class="stat-label">Total Stok Tersedia</div>
+            </div>
+          </article>
+
+          <article class="stat-card">
+            <div class="stat-icon-wrapper" style="background: var(--warning-light); color: var(--warning);">
+              🛒
+            </div>
+            <div>
+              <div class="stat-number" id="statPesananAktif">2 Judul Buku</div>
+              <div class="stat-label">Keranjang Pemesanan</div>
+            </div>
+          </article>
+
+          <article class="stat-card">
+            <div class="stat-icon-wrapper" style="background: var(--info-light); color: var(--info);">
+              🚚
+            </div>
+            <div>
+              <div class="stat-number" id="statTotalDO">2 Resi</div>
+              <div class="stat-label">Data Pengiriman (DO)</div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- MENU UTAMA APLIKASI (MENU CARDS) -->
+      <section style="margin-bottom: 2.5rem;">
+        <header style="margin-bottom: 1.5rem;">
+          <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--secondary);">
+            Navigasi Menu Utama
+          </h2>
+          <p style="color: var(--text-muted); font-size: 0.95rem;">
+            Pilih menu layanan di bawah ini untuk mengakses fitur aplikasi:
+          </p>
+        </header>
+
+        <div class="dashboard-grid">
+          
+          <!-- MENU 1: INFORMASI STOK / KATALOG -->
+          <a href="stok.html" class="menu-card">
+            <div>
+              <div class="menu-card-icon" style="background: #eff6ff; color: #1d4ed8;">
+                📖
+              </div>
+              <h3 class="menu-card-title">Informasi Stok / Katalog</h3>
+              <p class="menu-card-desc">
+                Lihat daftar katalog buku ajar, rincian harga, edisi, stok fisik, serta tambah stok item baru langsung melalui manipulasi DOM.
+              </p>
+            </div>
+            <div class="menu-card-action">
+              <span>Buka Katalog Stok</span>
+              <span>&rarr;</span>
+            </div>
+          </a>
+
+          <!-- MENU 2: TRACKING PENGIRIMAN -->
+          <a href="tracking.html" class="menu-card">
+            <div>
+              <div class="menu-card-icon" style="background: #f0fdf4; color: #16a34a;">
+                🚚
+              </div>
+              <h3 class="menu-card-title">Tracking Pengiriman</h3>
+              <p class="menu-card-desc">
+                Cek status pengiriman berdasarkan Nomor Delivery Order (DO) lengkap dengan visual progress bar, ekspedisi, dan riwayat perjalanan.
+              </p>
+            </div>
+            <div class="menu-card-action" style="color: #16a34a;">
+              <span>Lacak Nomor DO</span>
+              <span>&rarr;</span>
+            </div>
+          </a>
+
+          <!-- MENU 3: LAPORAN PEMESANAN & CHECKOUT -->
+          <a href="checkout.html" class="menu-card">
+            <div>
+              <div class="menu-card-icon" style="background: #fff7ed; color: #ea580c;">
+                🛒
+              </div>
+              <h3 class="menu-card-title">Laporan Pemesanan & Checkout</h3>
+              <p class="menu-card-desc">
+                Kelola item pesanan buku yang dapat ditambah/diubah, kalkulasi total biaya real-time, form data pemesan, serta validasi pembayaran.
+              </p>
+            </div>
+            <div class="menu-card-action" style="color: #ea580c;">
+              <span>Kelola Pemesanan</span>
+              <span>&rarr;</span>
+            </div>
+          </a>
+
+          <!-- MENU 4: RIWAYAT TRANSAKSI (MODAL VIEW) -->
+          <div class="menu-card" style="cursor: pointer;" onclick="openModal('modalRiwayatTransaksi')">
+            <div>
+              <div class="menu-card-icon" style="background: #faf5ff; color: #9333ea;">
+                📑
+              </div>
+              <h3 class="menu-card-title">Histori Transaksi</h3>
+              <p class="menu-card-desc">
+                Pantau seluruh catatan transaksi pembelian dan resi DO tersimpan dalam database JSON lokal (DO 20230012, DO 20230013, dll).
+              </p>
+            </div>
+            <div class="menu-card-action" style="color: #9333ea;">
+              <span>Buka Histori Transaksi</span>
+              <span>&rarr;</span>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+
+    </div>
+  </main>
+
+  <!-- MODAL RIWAYAT TRANSAKSI (FITUR KREATIF HISTORI TRANSAKSI) -->
+  <div class="modal-overlay" id="modalRiwayatTransaksi" role="dialog" aria-modal="true" aria-labelledby="modalRiwayatTitle">
+    <div class="modal-box" style="max-width: 700px;">
+      <header class="modal-header">
+        <h3 class="modal-title" id="modalRiwayatTitle">Histori Transaksi & Nomor DO</h3>
+        <button type="button" class="modal-close" onclick="closeModal('modalRiwayatTransaksi')" aria-label="Tutup">&times;</button>
+      </header>
+      <div class="modal-body">
+        <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1rem;">
+          Berikut adalah daftar transaksi pesanan yang tercatat dalam data dummy JSON:
+        </p>
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>No. DO</th>
+                <th>Nama Pemesan</th>
+                <th>Ekspedisi</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>20230012</strong></td>
+                <td>Rina Wulandari</td>
+                <td>JNE (0JKT01)</td>
+                <td>Rp 180.000</td>
+                <td><span class="chip chip-primary">Dalam Perjalanan</span></td>
+                <td><a href="tracking.html?do=20230012" class="btn btn-sm btn-outline">Lacak</a></td>
+              </tr>
+              <tr>
+                <td><strong>20230013</strong></td>
+                <td>Agus Pranoto</td>
+                <td>Pos Indonesia</td>
+                <td>Rp 220.000</td>
+                <td><span class="chip chip-success">Dikirim</span></td>
+                <td><a href="tracking.html?do=20230013" class="btn btn-sm btn-outline">Lacak</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <footer class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('modalRiwayatTransaksi')">Tutup</button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- MODAL ALERT KUSTOM -->
+  <div class="modal-overlay" id="customAlertModal" role="alertdialog" aria-modal="true">
+    <div class="modal-box alert-box">
+      <div id="alertIcon" class="alert-icon info">&#8505;</div>
+      <p id="alertMessage" class="alert-message">Pesan notifikasi aplikasi</p>
+      <button type="button" id="alertBtnOk" class="btn btn-primary" style="min-width: 130px;">
+        Mengerti / OK
+      </button>
+    </div>
+  </div>
+
+  <!-- Footer Halaman -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <p>&copy; 2026 Toko Buku Online. All rights reserved.</p>
+      <p style="font-size: 0.8rem;">Dibuat dengan HTML Semantik, CSS Modern, dan JavaScript DOM Manipulation.</p>
+    </div>
+  </footer>
+
+  <!-- Script Sumber Data & Interaktivitas -->
+  <script src="js/data.js"></script>
+  <script src="js/script.js"></script>
+</body>
+</html>
+
