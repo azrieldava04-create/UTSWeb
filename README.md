@@ -118,4 +118,6 @@ UTS Pemrograman web/
 
 
 ### link youtube
+https://youtu.be/Ck2tXL7aAhg?si=5PDzlotcudMJV88h
+
 
